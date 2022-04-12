@@ -48,7 +48,7 @@ jobs:
       - name: Update snapcraft.yaml
         run: |
           # Grab the output from the last job
-          LATEST="${{ steps.latest-upstream.outputs.release }}"
+          LATEST="${{ needs.check-upstream.outputs.release }}"
 
           # Get the current version from the repo
           CURRENT="$(grep -Po "^version: \"\K[0-9]+\.[0-9]+\.[0-9]+" snap/snapcraft.yaml)"
@@ -58,12 +58,14 @@ jobs:
 
       - name: Create a PR for local changes
         uses: peter-evans/create-pull-request@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_SCOPED_TOKEN }}
         with:
           title: "Update to Terraform ${{ needs.check-upstream.outputs.release }}"
           body: Automated update to follow upstream [release](https://github.com/hashicorp/terraform/releases/tag/${{ needs.check-upstream.outputs.release }}) of Terraform ${{ needs.check-upstream.outputs.release }}.
           author: "Github Actions <github-actions@github.com>"
           branch: "auto-${{ needs.check-upstream.outputs.release }}"
           delete-branch: true
-          commit-message: "Bump snap version to ${{ needs.check.outputs.release }}"
+          commit-message: "Bump snap version to ${{ needs.check-upstream.outputs.release }}"
           committer: "Github Actions <github-actions@github.com>"
           reviewers: jnsgruk
