@@ -4,9 +4,12 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "snap/snapcraft.yaml"
+      - ".github/workflows/**.yaml"
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     outputs:
       snap: ${{ steps.snapcraft.outputs.snap }}
@@ -14,41 +17,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Build snap
+      - name: Build snap locally
         uses: snapcore/action-build@v1
         id: snapcraft
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload locally built snap artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: snap
+          name: local-${{ steps.snapcraft.outputs.snap }}
           path: ${{ steps.snapcraft.outputs.snap }}
 
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: snap
-
-      - name: Install snap
+      - name: Install snap & invoke terraform
         run: |
-          sudo snap install --dangerous --classic ${{ needs.build.outputs.snap }}
-
-      - name: Basic test (invoke `terraform --version`)
-        run: terraform --version
+          sudo snap install --dangerous --classic ${{ steps.snapcraft.outputs.snap }}
+          terraform --version
 
       - name: Setup MicroK8s
         uses: balchua/microk8s-actions@v0.2.1
         with:
           channel: latest/stable
 
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Test snap (deploy on MicroK8s)
+      - name: Test snap - kubernetes provider
         run: |
           cd test
           terraform init
@@ -57,8 +46,9 @@ jobs:
 
   # Uncomment when the snap confinement/plugs are configured
   publish:
+    # Prevent this job from running concurrently so we don't spam launchpad
     concurrency: lp-remote-build
-    needs: [build, test]
+    needs: build-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -84,15 +74,24 @@ jobs:
           # Remote build the snap
           snapcraft remote-build --launchpad-accept-public-upload
 
-      # - name: Upload and release (edge, candidate)
-      #   env:
-      #     STORE_LOGIN: ${{ secrets.STORE_LOGIN }}
-      #   run: |
-      #     # Login to snapcraft using saved credentials
-      #     echo "$STORE_LOGIN" > credentials.txt
-      #     snapcraft login --with credentials.txt
+      - name: Upload remote build snap artifacts and build logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: remote-build-snaps
+          path: |
+            **/*.snap
+            **/*.txt
 
-      #     # Upload the snaps and release to edge, candidate
-      #     snapcraft upload --release edge,candidate "terraform_$VERSION_amd64.snap"
-      #     snapcraft upload --release edge,candidate "terraform_$VERSION_arm64.snap"
-      #     snapcraft upload --release edge,candidate "terraform_$VERSION_armhf.snap"
+      - name: Upload and release (edge, candidate)
+        env:
+          STORE_LOGIN: ${{ secrets.STORE_LOGIN }}
+        run: |
+          # Login to snapcraft using saved credentials
+          echo "$STORE_LOGIN" > credentials.txt
+          snapcraft login --with credentials.txt
+
+          # Upload the snaps and release to edge, candidate
+          # TODO(jsngruk): Remove the `|| true` once uploads are approved 
+          snapcraft upload --release edge,candidate "terraform_$VERSION_amd64.snap" || true
+          snapcraft upload --release edge,candidate "terraform_$VERSION_arm64.snap" || true
+          snapcraft upload --release edge,candidate "terraform_$VERSION_armhf.snap" || true

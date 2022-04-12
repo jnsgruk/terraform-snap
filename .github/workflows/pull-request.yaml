@@ -4,9 +4,12 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - "snap/snapcraft.yaml"
+      - ".github/workflows/**.yaml"
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     outputs:
       snap: ${{ steps.snapcraft.outputs.snap }}
@@ -14,41 +17,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Build snap
+      - name: Build snap locally
         uses: snapcore/action-build@v1
         id: snapcraft
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload locally built snap artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: snap
+          name: ${{ steps.snapcraft.outputs.snap }}
           path: ${{ steps.snapcraft.outputs.snap }}
 
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: snap
-
-      - name: Install snap
+      - name: Install snap & invoke terraform
         run: |
-          sudo snap install --dangerous --classic ${{ needs.build.outputs.snap }}
-
-      - name: Basic test (invoke `terraform --version`)
-        run: terraform --version
+          sudo snap install --dangerous --classic ${{ steps.snapcraft.outputs.snap }}
+          terraform --version
 
       - name: Setup MicroK8s
         uses: balchua/microk8s-actions@v0.2.1
         with:
           channel: latest/stable
 
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Test snap (deploy on MicroK8s)
+      - name: Test snap - kubernetes provider
         run: |
           cd test
           terraform init
@@ -57,19 +46,19 @@ jobs:
 
   # Publishes the snap to a branch for QA purposes only
   publish:
-    needs: [build, test]
+    needs: build-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          name: snap
+          name: ${{ needs.build-and-test.outputs.snap }}
 
       - name: Release snap to branch
         uses: snapcore/action-publish@v1
         with:
           store_login: ${{ secrets.STORE_LOGIN }}
-          snap: ${{ needs.build.outputs.snap }}
+          snap: ${{ needs.build-and-test.outputs.snap }}
           release: edge/pr-${{ env.PR }}
         env:
           PR: ${{ github.event.number }}
