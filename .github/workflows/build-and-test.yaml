@@ -8,7 +8,7 @@ on:
         value: ${{ jobs.build-and-test.outputs.snap }}
 
 jobs:
-  build-and-test:
+  main:
     runs-on: ubuntu-latest
     outputs:
       snap: ${{ steps.snapcraft.outputs.snap }}
