@@ -10,39 +10,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
-    outputs:
-      snap: ${{ steps.snapcraft.outputs.snap }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Build snap locally
-        uses: snapcore/action-build@v1
-        id: snapcraft
-
-      - name: Upload locally built snap artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ steps.snapcraft.outputs.snap }}
-          path: ${{ steps.snapcraft.outputs.snap }}
-
-      - name: Install snap & invoke terraform
-        run: |
-          sudo snap install --dangerous --classic ${{ steps.snapcraft.outputs.snap }}
-          terraform --version
-
-      - name: Setup MicroK8s
-        uses: balchua/microk8s-actions@v0.2.1
-        with:
-          channel: latest/stable
-
-      - name: Test snap - kubernetes provider
-        run: |
-          cd test
-          terraform init
-          terraform apply -auto-approve
-          kubectl get ns snaptest
+    uses: ./.github/workflows/build-and-test.yaml
 
   # Publishes the snap to a branch for QA purposes only
   publish:
@@ -52,7 +20,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          name: ${{ needs.build-and-test.outputs.snap }}
+          name: local-${{ needs.build-and-test.outputs.snap }}
 
       - name: Release snap to branch
         uses: snapcore/action-publish@v1
