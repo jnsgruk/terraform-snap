@@ -1,0 +1,73 @@
+name: Publishing Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      snap: ${{ steps.snapcraft.outputs.snap }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build snap
+        uses: snapcore/action-build@v1
+        id: snapcraft
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: snap
+          path: ${{ steps.snapcraft.outputs.snap }}
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: snap
+
+      - name: Install snap
+        run: |
+          sudo snap install --dangerous --classic ${{ needs.build.outputs.snap }}
+
+      - name: Basic test (invoke `terraform --version`)
+        run: terraform --version
+
+      - name: Setup MicroK8s
+        uses: balchua/microk8s-actions@v0.2.1
+        with:
+          channel: latest/stable
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Test snap (deploy on MicroK8s)
+        run: |
+          cd test
+          terraform init
+          terraform apply -auto-approve
+          kubectl get ns snaptest
+
+  # # Uncomment when the snap ownership is transferred and CI is set up
+  # publish:
+  #   needs: [build, test]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Download artifact
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: snap
+
+  #     - name: Release snap to branch
+  #       uses: snapcore/action-publish@v1
+  #       with:
+  #         store_login: ${{ secrets.STORE_LOGIN }}
+  #         snap: ${{ needs.build.outputs.snap }}
+  #         release: edge
