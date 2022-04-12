@@ -27,6 +27,7 @@ jobs:
     outputs:
       snap: ${{ steps.test.outputs.snap }}
     steps:
+      - uses: actions/checkout@v3
       - id: test
         uses: ./.github/workflows/build-and-test.yaml
 
@@ -38,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup snapcraft
         env:
