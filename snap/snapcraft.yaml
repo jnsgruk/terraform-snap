@@ -1,5 +1,5 @@
 name: terraform
-version: "1.1.7"
+version: ""
 summary: Terraform enables you to create, change, and improve infrastructure.
 description: |
   Terraform enables you to safely and predictably create, change, and improve
