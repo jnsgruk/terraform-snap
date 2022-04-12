@@ -50,11 +50,11 @@ upstream so Terraform can authoritatively publish future releases.
 -   [x] Update the description of the repository
 -   [x] Update logos and references to `[Project]` and `[my-snap-name]`
 -   [x] Create a snap that runs in `devmode`
--   [ ] Register the snap in the store, **using the preferred upstream name**
--   [ ] Add a screenshot to this `README.md`
--   [ ] Publish the `devmode` snap in the Snap store edge channel
+-   [x] Register the snap in the store, **using the preferred upstream name**
+-   [x] Add a screenshot to this `README.md`
+-   [x] Publish the `devmode` snap in the Snap store edge channel
 -   [x] Add install instructions to this `README.md`
--   [ ] Update snap store metadata, icons and screenshots
+-   [x] Update snap store metadata, icons and screenshots
 -   [ ] Convert the snap to `strict` confinement, or `classic` confinement if it qualifies
 -   [ ] Publish the confined snap in the Snap store beta channel
 -   [ ] Update the install instructions in this `README.md`
