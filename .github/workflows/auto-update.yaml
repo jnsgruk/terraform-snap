@@ -1,0 +1,69 @@
+name: Auto Update
+on:
+  # Manual trigger
+  workflow_dispatch:
+  # Check regularly the upstream every four hours
+  # schedule:
+  #   - cron: "0 0,4,8,12,16,20 * * *"
+
+jobs:
+  check-upstream:
+    runs-on: ubuntu-latest
+    outputs:
+      release: ${{steps.check.outputs.release}}
+    steps:
+      # Get the latest release of hashicorp/terraform in format 'vX.X.X'
+      - id: latest-upstream
+        uses: pozetroninc/github-action-get-latest-release@v0.5.0
+        with:
+          repository: hashicorp/terraform
+          excludes: prerelease, draft
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - id: check
+        name: Check for new releases
+        run: |
+          LATEST="${{ steps.latest-upstream.outputs.release }}"
+
+          # Get the current version from the repo
+          CURRENT="v$(grep -Po "^version: \"\K[0-9]+\.[0-9]+\.[0-9]+" snap/snapcraft.yaml)"
+
+          if [[ "$CURRENT" != "$LATEST" ]]; then
+            echo "::set-output name=release::${LATEST}"
+            echo "New upstream release '$LATEST' found"
+          else
+            echo "No new upstream release found"
+          fi
+
+  create-pr:
+    runs-on: ubuntu-latest
+    needs: check-upstream
+    if: ${{ needs.check-upstream.outputs.release != '' }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Update snapcraft.yaml
+        run: |
+          # Grab the output from the last job
+          LATEST="${{ steps.latest-upstream.outputs.release }}"
+
+          # Get the current version from the repo
+          CURRENT="$(grep -Po "^version: \"\K[0-9]+\.[0-9]+\.[0-9]+" snap/snapcraft.yaml)"
+
+          # Update the snapcraft.yaml
+          sed -i "s/^version: \"$CURRENT\"/version: \"${LATEST/v/}\"/g" snap/snapcraft.yaml
+
+      - name: Create a PR for local changes
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: "Update to Terraform ${{ needs.check-upstream.outputs.release }}"
+          body: Automated update to follow upstream [release](https://github.com/hashicorp/terraform/releases/tag/${{ needs.check-upstream.outputs.release }}) of Terraform ${{ needs.check-upstream.outputs.release }}.
+          author: "Github Actions <github-actions@github.com>"
+          branch: "auto-${{ needs.check-upstream.outputs.release }}"
+          delete-branch: true
+          commit-message: "Bump snap version to ${{ needs.check.outputs.release }}"
+          committer: "Github Actions <github-actions@github.com>"
+          reviewers: jnsgruk
