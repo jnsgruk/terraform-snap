@@ -9,20 +9,7 @@ on:
       - ".github/workflows/**.yaml"
 
 jobs:
-  # Check if any of the jobs have been run already (in a PR, for example)
-  pre_job:
-    # continue-on-error: true # Uncomment once integration is finished
-    runs-on: ubuntu-latest
-    outputs:
-      should_skip: ${{ steps.skip_check.outputs.should_skip }}
-    steps:
-      - id: skip_check
-        uses: fkirc/skip-duplicate-actions@master
-
   build-and-test:
-    # We might skip this job, if it was already run in a PR
-    needs: pre_job
-    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     uses: ./.github/workflows/build-and-test.yaml
 
   # Uncomment when the snap confinement/plugs are configured
