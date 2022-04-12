@@ -22,14 +22,10 @@ jobs:
   build-and-test:
     # We might skip this job, if it was already run in a PR
     needs: pre_job
-    runs-on: ubuntu-latest
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     outputs:
-      snap: ${{ steps.test.outputs.snap }}
-    steps:
-      - uses: actions/checkout@v3
-      - id: test
-        uses: ./.github/workflows/build-and-test.yaml
+      snap: ${{ steps.snapcraft.outputs.snap }}
+    uses: ./.github/workflows/build-and-test.yaml
 
   # Uncomment when the snap confinement/plugs are configured
   publish:

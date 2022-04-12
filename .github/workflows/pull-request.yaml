@@ -12,11 +12,8 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     outputs:
-      snap: ${{ steps.test.outputs.snap }}
-    steps:
-      - uses: actions/checkout@v3
-      - id: test
-        uses: ./.github/workflows/build-and-test.yaml
+      snap: ${{ steps.snapcraft.outputs.snap }}
+    uses: ./.github/workflows/build-and-test.yaml
 
   # Publishes the snap to a branch for QA purposes only
   publish:
