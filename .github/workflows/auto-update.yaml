@@ -61,6 +61,7 @@ jobs:
 
       - name: Create a PR for local changes
         uses: peter-evans/create-pull-request@v4
+        id: cpr
         with:
           token: ${{ steps.generate-token.outputs.token }}
           commit-message: "Bump snap version to ${{ needs.check-upstream.outputs.release }}"
@@ -72,3 +73,11 @@ jobs:
           delete-branch: true
           reviewers: jnsgruk
           assignees: jnsgruk
+
+      - name: Enable Pull Request Automerge
+        if: steps.cpr.outputs.pull-request-operation == 'created'
+        uses: peter-evans/enable-pull-request-automerge@v2
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash

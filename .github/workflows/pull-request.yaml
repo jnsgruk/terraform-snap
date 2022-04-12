@@ -56,20 +56,20 @@ jobs:
           kubectl get ns snaptest
 
   # # Uncomment when the snap ownership is transferred and CI is set up
-  # publish:
-  #   needs: [build, test]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Download artifact
-  #       uses: actions/download-artifact@v2
-  #       with:
-  #         name: snap
+  publish:
+    needs: [build, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: snap
 
-  #     - name: Release snap to branch
-  #       uses: snapcore/action-publish@v1
-  #       with:
-  #         store_login: ${{ secrets.STORE_LOGIN }}
-  #         snap: ${{ needs.build.outputs.snap }}
-  #         release: edge/pr-${{ env.PR }}
-  #       env:
-  #         PR: ${{ github.event.number }}
+      - name: Release snap to branch
+        uses: snapcore/action-publish@v1
+        with:
+          store_login: ${{ secrets.STORE_LOGIN }}
+          snap: ${{ needs.build.outputs.snap }}
+          release: edge/pr-${{ env.PR }}
+        env:
+          PR: ${{ github.event.number }}
