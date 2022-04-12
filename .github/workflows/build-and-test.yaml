@@ -5,7 +5,7 @@ on:
     outputs:
       snap:
         description: "Filename of the built snap"
-        value: ${{ jobs.build-and-test.outputs.snap }}
+        value: ${{ jobs.main.outputs.snap }}
 
 jobs:
   main:
