@@ -10,6 +10,7 @@ on:
 
 jobs:
   build-and-test:
+    runs-on: ubuntu-latest
     outputs:
       snap: ${{ steps.test.outputs.snap }}
     steps:
