@@ -55,7 +55,7 @@ jobs:
           terraform apply -auto-approve
           kubectl get ns snaptest
 
-  # # Uncomment when the snap ownership is transferred and CI is set up
+  # Publishes the snap to a branch for QA purposes only
   publish:
     needs: [build, test]
     runs-on: ubuntu-latest

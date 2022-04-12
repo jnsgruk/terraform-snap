@@ -55,19 +55,44 @@ jobs:
           terraform apply -auto-approve
           kubectl get ns snaptest
 
-  # Uncomment when the snap ownership is transferred and CI is set up
+  # Uncomment when the snap confinement/plugs are configured
   publish:
+    concurrency: lp-remote-build
     needs: [build, test]
     runs-on: ubuntu-latest
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: snap
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Release snap to branch
-        uses: snapcore/action-publish@v1
-        with:
-          store_login: ${{ secrets.STORE_LOGIN }}
-          snap: ${{ needs.build.outputs.snap }}
-          release: edge
+      - name: Install snapcraft
+        run: sudo snap install snapcraft --classic
+
+      - name: Remote build the snap
+        env:
+          LP_BUILD_SECRET: ${{ secrets.LP_BUILD_SECRET }}
+        run: |
+          # Get the current version of the snap
+          VERSION="$(grep -Po "^version: \"\K[0-9]+\.[0-9]+\.[0-9]+" snap/snapcraft.yaml)"
+
+          # Setup Launchpad credentials
+          mkdir -p ~/.local/share/snapcraft/provider/launchpad
+          echo "$LP_BUILD_SECRET" >~/.local/share/snapcraft/provider/launchpad/
+
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "Github Actions"
+
+          # Remote build the snap
+          snapcraft remote-build --launchpad-accept-public-upload
+
+      # - name: Upload and release (edge, candidate)
+      #   env:
+      #     STORE_LOGIN: ${{ secrets.STORE_LOGIN }}
+      #   run: |
+      #     # Login to snapcraft using saved credentials
+      #     echo "$STORE_LOGIN" > credentials.txt
+      #     snapcraft login --with credentials.txt
+
+      #     # Upload the snaps and release to edge, candidate
+      #     snapcraft upload --release edge,candidate "terraform_$VERSION_amd64.snap"
+      #     snapcraft upload --release edge,candidate "terraform_$VERSION_arm64.snap"
+      #     snapcraft upload --release edge,candidate "terraform_$VERSION_armhf.snap"
