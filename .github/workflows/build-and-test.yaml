@@ -1,5 +1,8 @@
 name: Build and Test
 
+on:
+  workflow_call:
+
 outputs:
   snap: ${{ steps.snapcraft.outputs.snap }}
 
