@@ -8,12 +8,8 @@ description: |
   treated as code, edited, reviewed, and versioned.
 base: core20
 grade: stable
-confinement: classic
+confinement: strict
 compression: lzo
-
-apps:
-  terraform:
-    command: terraform
 
 architectures:
   - build-on: amd64
@@ -31,3 +27,48 @@ parts:
       - on arm64: https://releases.hashicorp.com/terraform/$SNAPCRAFT_PROJECT_VERSION/terraform_$SNAPCRAFT_PROJECT_VERSION_linux_arm64.zip
     stage:
       - terraform
+
+apps:
+  terraform:
+    command: terraform
+    environment:
+      TF_PLUGIN_CACHE_DIR: $HOME/.terraform.d/plugin-cache
+    plugs:
+      - home
+      - network
+      - network-bind
+      - dot-terraformrc
+      - dot-terraform-d
+      - kube-credentials
+      - aws-credentials
+      - azure-credentials
+      - gcp-credentials
+
+plugs:
+  dot-terraformrc:
+    interface: personal-files
+    read:
+      - $HOME/.terraformrc
+  dot-terraform-d:
+    interface: personal-files
+    read:
+      - $HOME/.terraform.d
+    write:
+      - $HOME/.terraform.d
+
+  kube-credentials:
+    interface: personal-files
+    read:
+      - $HOME/.kube/config
+  aws-credentials:
+    interface: personal-files
+    read:
+      - $HOME/.aws
+  gcp-credentials:
+    interface: personal-files
+    read:
+      - $HOME/.config/gcloud
+  azure-credentials:
+    interface: personal-files
+    read:
+      - $HOME/.azure
