@@ -1,6 +1,11 @@
 name: terraform
 version: "1.1.9"
 summary: Terraform enables you to create, change, and improve infrastructure.
+license: MPL-2.0
+contact: jon.seager@canonical.com
+issues: https://github.com/jnsgruk/terraform/issues
+source-code: https://github.com/jnsgruk/terraform
+website: https://terraform.io
 description: |
   Terraform enables you to safely and predictably create, change, and improve
   infrastructure. It is an open source tool that codifies APIs into
