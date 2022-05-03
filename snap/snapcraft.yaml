@@ -17,7 +17,6 @@ apps:
 
 architectures:
   - build-on: amd64
-  - build-on: i386
   - build-on: armhf
   - build-on: arm64
   - build-on: s390x
@@ -27,6 +26,14 @@ parts:
   terraform:
     plugin: go
     source: https://github.com/hashicorp/terraform
+    source-type: git
     source-tag: "v$SNAPCRAFT_PROJECT_VERSION"
-    # stage:
-    #   - terraform
+    build-environment:
+      - CGO_ENABLED: "0"
+      - GOFLAGS: "-mod=readonly"
+    override-build: |
+      go mod download
+      go build -ldflags "-s -w"
+      cp terraform $SNAPCRAFT_PART_INSTALL/terraform
+    stage:
+      - terraform
