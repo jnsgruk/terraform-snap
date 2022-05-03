@@ -20,14 +20,13 @@ architectures:
   - build-on: i386
   - build-on: armhf
   - build-on: arm64
+  - build-on: s390x
+  - build-on: ppc64el
 
 parts:
   terraform:
-    plugin: dump
-    source:
-      - on amd64: https://releases.hashicorp.com/terraform/$SNAPCRAFT_PROJECT_VERSION/terraform_$SNAPCRAFT_PROJECT_VERSION_linux_amd64.zip
-      - on i386: https://releases.hashicorp.com/terraform/$SNAPCRAFT_PROJECT_VERSION/terraform_$SNAPCRAFT_PROJECT_VERSION_linux_386.zip
-      - on armhf: https://releases.hashicorp.com/terraform/$SNAPCRAFT_PROJECT_VERSION/terraform_$SNAPCRAFT_PROJECT_VERSION_linux_arm.zip
-      - on arm64: https://releases.hashicorp.com/terraform/$SNAPCRAFT_PROJECT_VERSION/terraform_$SNAPCRAFT_PROJECT_VERSION_linux_arm64.zip
-    stage:
-      - terraform
+    plugin: go
+    source: https://github.com/hashicorp/terraform
+    source-tag: "v$SNAPCRAFT_PROJECT_VERSION"
+    # stage:
+    #   - terraform
