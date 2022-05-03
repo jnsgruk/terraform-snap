@@ -17,17 +17,23 @@ apps:
 
 architectures:
   - build-on: amd64
-  - build-on: i386
   - build-on: armhf
   - build-on: arm64
+  - build-on: s390x
+  - build-on: ppc64el
 
 parts:
   terraform:
-    plugin: dump
-    source:
-      - on amd64: https://releases.hashicorp.com/terraform/$SNAPCRAFT_PROJECT_VERSION/terraform_$SNAPCRAFT_PROJECT_VERSION_linux_amd64.zip
-      - on i386: https://releases.hashicorp.com/terraform/$SNAPCRAFT_PROJECT_VERSION/terraform_$SNAPCRAFT_PROJECT_VERSION_linux_386.zip
-      - on armhf: https://releases.hashicorp.com/terraform/$SNAPCRAFT_PROJECT_VERSION/terraform_$SNAPCRAFT_PROJECT_VERSION_linux_arm.zip
-      - on arm64: https://releases.hashicorp.com/terraform/$SNAPCRAFT_PROJECT_VERSION/terraform_$SNAPCRAFT_PROJECT_VERSION_linux_arm64.zip
+    plugin: go
+    source: https://github.com/hashicorp/terraform
+    source-type: git
+    source-tag: "v$SNAPCRAFT_PROJECT_VERSION"
+    build-environment:
+      - CGO_ENABLED: "0"
+      - GOFLAGS: "-mod=readonly"
+    override-build: |
+      go mod download
+      go build -ldflags "-s -w"
+      cp terraform $SNAPCRAFT_PART_INSTALL/terraform
     stage:
       - terraform

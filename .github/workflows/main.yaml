@@ -60,3 +60,5 @@ jobs:
           snapcraft upload --release edge,candidate "terraform_${VERSION}_amd64.snap"
           snapcraft upload --release edge,candidate "terraform_${VERSION}_arm64.snap"
           snapcraft upload --release edge,candidate "terraform_${VERSION}_armhf.snap"
+          snapcraft upload --release edge,candidate "terraform_${VERSION}_s390x.snap"
+          snapcraft upload --release edge,candidate "terraform_${VERSION}_ppc64el.snap"
