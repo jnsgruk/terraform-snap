@@ -7,7 +7,7 @@
 <p align="center"><b>This is the snap for Terraform</b>, <i>“Terraform enables create, change, and improve infrastructure.”</i>. It works on Ubuntu, Fedora, Debian, and other major Linux
 distributions.</p>
 
-[![terraform](https://snapcraft.io/terraform/badge.svg)](https://snapcraft.io/terraform)
+<p align="center"><a href="https://snapcraft.io/terraform"><img src="https://snapcraft.io/terraform/badge.svg" alt="terraform badge"/><a/></p>
 
 <!-- Uncomment and modify this when you have a screenshot
 ![terraform](screenshot.png?raw=true "terraform")
