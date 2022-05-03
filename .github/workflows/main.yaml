@@ -57,7 +57,8 @@ jobs:
           VERSION="$(grep -Po "^version: \"\K[0-9]+\.[0-9]+\.[0-9]+" snap/snapcraft.yaml)"
 
           # Upload the snaps and release to edge, candidate
-          # TODO(jsngruk): Remove the `|| true` once uploads are approved 
-          snapcraft upload --release edge,candidate "terraform_$VERSION_amd64.snap" || true
-          snapcraft upload --release edge,candidate "terraform_$VERSION_arm64.snap" || true
-          snapcraft upload --release edge,candidate "terraform_$VERSION_armhf.snap" || true
+          snapcraft upload --release edge,candidate "terraform_${VERSION}_amd64.snap"
+          snapcraft upload --release edge,candidate "terraform_${VERSION}_arm64.snap"
+          snapcraft upload --release edge,candidate "terraform_${VERSION}_armhf.snap"
+          snapcraft upload --release edge,candidate "terraform_${VERSION}_s390x.snap"
+          snapcraft upload --release edge,candidate "terraform_${VERSION}_ppc64el.snap"
