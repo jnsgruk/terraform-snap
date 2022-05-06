@@ -17,7 +17,7 @@ distributions.</p>
 
 ## Install
 
-    sudo snap install --classic terraform --beta
+    sudo snap install --classic terraform
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/terraform)
 
@@ -51,9 +51,9 @@ upstream so Terraform can authoritatively publish future releases.
 -   [ ] Make a post in the [Snapcraft Forum](https://forum.snapcraft.io) asking for a transfer of the snap name from you to snapcrafters - [link]()
 -   [ ] Ask a [Snapcrafters admin](https://github.com/orgs/snapcrafters/people?query=%20role%3Aowner) to fork your repo into github.com/snapcrafters, and configure the repo for automatic publishing into edge on commit
 -   [x] Add the provided Snapcraft build badge to this `README.md`
--   [ ] Publish the snap in the Snap store stable channel
--   [ ] Update the install instructions in this `README.md`
--   [ ] Post an announcement in the [Snapcraft Forum](https://forum.snapcraft.io) - [link]()
+-   [x] Publish the snap in the Snap store stable channel
+-   [x] Update the install instructions in this `README.md`
+-   [x] Post an announcement in the [Snapcraft Forum](https://forum.snapcraft.io) - [link]()
 -   [ ] Submit a pull request or patch upstream that adds snap install documentation - [link]()
 -   [ ] Submit a pull request or patch upstream that adds the `snapcraft.yaml` and any required assets/launchers - [link]()
 -   [ ] Add upstream contact information to the `README.md`
