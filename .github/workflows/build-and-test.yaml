@@ -19,6 +19,7 @@ jobs:
       - name: Build snap locally
         uses: snapcore/action-build@v1
         id: snapcraft
+        snapcraft-channel: 7.x/candidate
 
       - name: Upload locally built snap artifact
         uses: actions/upload-artifact@v3

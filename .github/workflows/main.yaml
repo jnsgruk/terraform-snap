@@ -28,7 +28,7 @@ jobs:
           STORE_LOGIN: ${{ secrets.STORE_LOGIN }}
         run: |
           # Install snapcraft
-          sudo snap install snapcraft --classic
+          sudo snap install snapcraft --classic --channel=7.x/candidate
 
           # Login to snapcraft using saved credentials
           echo "$STORE_LOGIN" > credentials.txt
