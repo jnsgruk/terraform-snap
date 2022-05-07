@@ -6,7 +6,7 @@ description: |
   infrastructure. It is an open source tool that codifies APIs into
   declarative configuration files that can be shared amongst team members,
   treated as code, edited, reviewed, and versioned.
-base: core20
+base: core22
 grade: stable
 confinement: classic
 compression: lzo
