@@ -32,13 +32,16 @@ parts:
     plugin: go
     source: https://github.com/hashicorp/terraform
     source-type: git
-    source-tag: "v$SNAPCRAFT_PROJECT_VERSION"
+    override-pull: |
+      VERSION="$(craftctl get version)"
+      git clone -b "v$VERSION" https://github.com/hashicorp/terraform $CRAFT_PART_SRC
+    build-snaps: [go]
     build-environment:
       - CGO_ENABLED: "0"
       - GOFLAGS: "-mod=readonly"
     override-build: |
       go mod download
       go build -ldflags "-s -w"
-      cp terraform $SNAPCRAFT_PART_INSTALL/terraform
+      cp terraform $CRAFT_PART_INSTALL/terraform
     stage:
       - terraform
