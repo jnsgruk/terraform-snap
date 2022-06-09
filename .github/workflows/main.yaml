@@ -29,6 +29,7 @@ jobs:
         run: |
           # Install snapcraft
           sudo snap install snapcraft --classic
+          sudo snap install yq --channel=v4/stable
 
           # Login to snapcraft using saved credentials
           echo "$STORE_LOGIN" > credentials.txt
@@ -54,11 +55,21 @@ jobs:
       - name: Upload and release (edge, candidate)
         run: |
           # Get the current version of the snap
-          VERSION="$(grep -Po "^version: \"\K[0-9]+\.[0-9]+\.[0-9]+" snap/snapcraft.yaml)"
+          VERSION="$(cat snap/snapcraft.yaml| yq e '.version' -)"
+
+          # If the version conforms to a standard semantic version, release to edge & candidate.
+          # This means that '1.2.2' would release to edge & candidate, but '1.2.3-rc1' or 
+          # '1.2.3-alpha20220606' would just release to edge.
+           
+          if echo "$VERSION" | grep -qPo "[0-9]+\.[0-9]+\.[0-9]+$"; then
+            CHANNELS="edge,candidate"
+          else
+            CHANNELS="edge"
+          fi
 
           # Upload the snaps and release to edge, candidate
-          snapcraft upload --release edge,candidate "terraform_${VERSION}_amd64.snap"
-          snapcraft upload --release edge,candidate "terraform_${VERSION}_arm64.snap"
-          snapcraft upload --release edge,candidate "terraform_${VERSION}_armhf.snap"
-          snapcraft upload --release edge,candidate "terraform_${VERSION}_s390x.snap"
-          snapcraft upload --release edge,candidate "terraform_${VERSION}_ppc64el.snap"
+          snapcraft upload --release "$CHANNELS" "terraform_${VERSION}_amd64.snap"
+          snapcraft upload --release "$CHANNELS" "terraform_${VERSION}_arm64.snap"
+          snapcraft upload --release "$CHANNELS" "terraform_${VERSION}_armhf.snap"
+          snapcraft upload --release "$CHANNELS" "terraform_${VERSION}_s390x.snap"
+          snapcraft upload --release "$CHANNELS" "terraform_${VERSION}_ppc64el.snap"

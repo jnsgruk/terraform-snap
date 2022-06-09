@@ -17,17 +17,21 @@ jobs:
         uses: pozetroninc/github-action-get-latest-release@v0.5.0
         with:
           repository: hashicorp/terraform
-          excludes: prerelease, draft
+          excludes: draft
 
       - name: Checkout repo
         uses: actions/checkout@v3
+
+      - name: Install yq
+        run: sudo snap install yq --channel=v4/stable
 
       - id: check
         name: Check for new releases
         run: |
           LATEST="${{ steps.latest-upstream.outputs.release }}"
+
           # Get the current version from the repo
-          CURRENT="v$(grep -Po "^version: \"\K[0-9]+\.[0-9]+\.[0-9]+" snap/snapcraft.yaml)"
+          CURRENT="$(cat snap/snapcraft.yaml| yq e '.version' -)"
 
           if [[ "$CURRENT" != "$LATEST" ]]; then
             echo "::set-output name=release::${LATEST}"
@@ -44,12 +48,15 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
+      - name: Install yq
+        run: sudo snap install yq --channel=v4/stable
+
       - name: Update snapcraft.yaml
         run: |
           # Grab the output from the last job
           LATEST="${{ needs.check-upstream.outputs.release }}"
           # Get the current version from the repo
-          CURRENT="$(grep -Po "^version: \"\K[0-9]+\.[0-9]+\.[0-9]+" snap/snapcraft.yaml)"
+          CURRENT="$(cat snap/snapcraft.yaml| yq e '.version' -)"
           # Update the snapcraft.yaml (strip the leading 'v' from the LATEST version)
           sed -i "s/^version: \"$CURRENT\"/version: \"${LATEST/v/}\"/g" snap/snapcraft.yaml
 
