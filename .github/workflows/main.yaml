@@ -49,6 +49,8 @@ jobs:
             **/*.txt
 
       - name: Upload and release (edge, candidate)
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
         run: |
           # Get the current version of the snap
           VERSION="$(cat snap/snapcraft.yaml| yq e '.version' -)"
