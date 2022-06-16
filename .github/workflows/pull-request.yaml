@@ -23,7 +23,7 @@ jobs:
           name: local-${{ needs.build-and-test.outputs.snap }}
 
       - name: Release snap to branch
-        uses: snapcore/action-publish@v1
+        uses: snapcore/action-publish@master
         with:
           snap: ${{ needs.build-and-test.outputs.snap }}
           release: edge/pr-${{ env.PR }}
