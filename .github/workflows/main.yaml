@@ -28,7 +28,7 @@ jobs:
           STORE_LOGIN: ${{ secrets.STORE_LOGIN }}
         run: |
           # Install snapcraft
-          sudo snap install snapcraft --classic
+          sudo snap install snapcraft --classic --channel=6.x/stable
           sudo snap install yq --channel=v4/stable
 
           # Login to snapcraft using saved credentials
