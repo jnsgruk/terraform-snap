@@ -23,10 +23,10 @@ jobs:
           name: local-${{ needs.build-and-test.outputs.snap }}
 
       - name: Release snap to branch
-        uses: snapcore/action-publish@v1
+        uses: snapcore/action-publish@master
         with:
-          store_login: ${{ secrets.STORE_LOGIN }}
           snap: ${{ needs.build-and-test.outputs.snap }}
           release: edge/pr-${{ env.PR }}
         env:
           PR: ${{ github.event.number }}
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}

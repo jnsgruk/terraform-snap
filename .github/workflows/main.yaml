@@ -25,15 +25,11 @@ jobs:
       - name: Setup snapcraft
         env:
           LP_BUILD_SECRET: ${{ secrets.LP_BUILD_SECRET }}
-          STORE_LOGIN: ${{ secrets.STORE_LOGIN }}
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
         run: |
           # Install snapcraft
           sudo snap install snapcraft --classic
           sudo snap install yq --channel=v4/stable
-
-          # Login to snapcraft using saved credentials
-          echo "$STORE_LOGIN" > credentials.txt
-          snapcraft login --with credentials.txt
 
           # Setup Launchpad credentials
           mkdir -p ~/.local/share/snapcraft/provider/launchpad
