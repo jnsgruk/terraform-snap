@@ -34,9 +34,33 @@ jobs:
       - name: Setup MicroK8s
         uses: balchua/microk8s-actions@v0.2.1
 
-      - name: Test snap - kubernetes provider
+      - name: Setup Docker
         run: |
-          cd test
-          terraform init
-          terraform apply -auto-approve
+          sudo snap install docker
+          sudo addgroup --system docker; sudo adduser $USER docker
+          newgrp docker
+          sudo snap disable docker; sudo snap enable docker
+
+      - name: Test snap - Kubernetes
+        run: |
+          terraform -chdir=test/kubernetes init
+          terraform -chdir=test/kubernetes apply -auto-approve
           kubectl get ns snaptest
+
+      - name: Test snap - Docker
+        run: |
+          terraform -chdir=test/docker init
+          terraform -chdir=test/docker apply -auto-approve
+
+          # Loop until we can reach the container we just created
+          while ! curl -s localhost:8000; do
+            # If unsuccessful wait for 5 secs before retrying
+            sleep 5
+            ((i++))
+
+            # If this is our 10th attempt, bail with an error
+            if [[ $i -gt 10 ]]; then
+              echo "Unable to reach container"
+              exit 1
+            fi
+          done
