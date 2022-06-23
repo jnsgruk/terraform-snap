@@ -11,7 +11,7 @@ description: |
   infrastructure. It is an open source tool that codifies APIs into
   declarative configuration files that can be shared amongst team members,
   treated as code, edited, reviewed, and versioned.
-base: core20
+base: core22
 grade: stable
 confinement: classic
 compression: lzo
@@ -33,6 +33,7 @@ parts:
     source: https://github.com/hashicorp/terraform
     source-type: git
     source-tag: "v$SNAPCRAFT_PROJECT_VERSION"
+    build-snaps: [go]
     build-environment:
       - CGO_ENABLED: "0"
       - GOFLAGS: "-mod=readonly"
