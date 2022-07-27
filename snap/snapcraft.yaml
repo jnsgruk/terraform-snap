@@ -1,5 +1,5 @@
 name: terraform
-version: "1.2.5"
+version: "1.2.6"
 summary: Terraform enables you to create, change, and improve infrastructure.
 license: MPL-2.0
 contact: jon.seager@canonical.com
