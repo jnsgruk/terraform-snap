@@ -37,9 +37,13 @@ parts:
     build-environment:
       - CGO_ENABLED: "0"
       - GOFLAGS: "-mod=readonly"
+      - LDFLAGS: "-s -w"
     override-build: |
+      export LDFLAGS="${LDFLAGS} -X 'github.com/hashicorp/terraform/version.Prerelease='"
+      export LDFLAGS="${LDFLAGS} -X 'github.com/hashicorp/terraform/version.Version=$(cat version/VERSION)'"
+
       go mod download
-      go build -ldflags "-s -w"
+      go build -ldflags "${LDFLAGS}"
       cp terraform $SNAPCRAFT_PART_INSTALL/terraform
     stage:
       - terraform
