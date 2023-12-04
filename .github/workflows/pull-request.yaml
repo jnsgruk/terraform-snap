@@ -3,11 +3,57 @@ name: Pull Request
 on:
   pull_request:
     branches:
-      - main
+      - candidate
     paths:
-      - "snap/snapcraft.yaml"
-      - ".github/workflows/**.yaml"
+      - "snap/**"
+      - ".github/**"
+      - "test/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-and-test:
-    uses: ./.github/workflows/build-and-test.yaml
+  build-test:
+    name: 🧪 Build snap on amd64
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🧪 Build snap on amd64
+        uses: snapcrafters/ci/test-snap-build@main
+        with:
+          install: true
+      
+      - name: Setup MicroK8s
+        uses: balchua/microk8s-actions@v0.2.1
+
+      - name: Setup Docker
+        run: |
+          sudo snap install docker
+          sudo addgroup --system docker; sudo adduser $USER docker
+          newgrp docker
+          sudo snap disable docker; sudo snap enable docker
+
+      - name: Test snap - Kubernetes
+        run: |
+          terraform -chdir=test/kubernetes init
+          terraform -chdir=test/kubernetes apply -auto-approve
+          kubectl get ns snaptest
+
+      - name: Test snap - Docker
+        run: |
+          terraform -chdir=test/docker init
+          terraform -chdir=test/docker apply -auto-approve
+
+          # Loop until we can reach the container we just created
+          while ! curl -s localhost:8000; do
+            # If unsuccessful wait for 5 secs before retrying
+            sleep 5
+            ((i++))
+
+            # If this is our 10th attempt, bail with an error
+            if [[ $i -gt 10 ]]; then
+              echo "Unable to reach container"
+              exit 1
+            fi
+          done
+
