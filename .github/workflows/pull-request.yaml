@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   build-test:
-    name: 🧪 Build snap on amd64
+    name: Build & Test Snap (amd64)
     runs-on: ubuntu-latest
     steps:
       - name: 🧪 Build snap on amd64
