@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="./images/terraform.png" alt="Terraform" width="200px">
+  <img src="./snap/gui/terraform.png" alt="Terraform" width="200px">
   <br />
   Terraform
 </h1>
@@ -25,9 +25,9 @@ distributions.</p>
 
 ## The Snapcrafters
 
-| [![Jon Seager](https://gravatar.com/avatar/1631cd9966cbaeb0ee82d1808f4ac3efc3f77cf6de9b6595a4eac0e577834c35/?s=128)](https://github.com/jnsgruk) |
-| :----------------------------------------------------------------------------------------------------------------------------------------------: |
-|                                                     [Jon Seager](https://github.com/jnsgruk)                                                     |
+| [![Jon Seager](https://gravatar.com/avatar/4d637dedcba50544c99e086f1e462b8c?s=128)](https://github.com/jnsgruk) |
+| :-------------------------------------------------------------------------------------------------------------: |
+|                                    [Jon Seager](https://github.com/jnsgruk)                                     |
 
 <!-- Uncomment and modify this when you have upstream contacts
 ## Upstream
