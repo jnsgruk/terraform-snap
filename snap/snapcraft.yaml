@@ -2,7 +2,7 @@ name: terraform
 version: "1.6.3"
 summary: Terraform enables you to create, change, and improve infrastructure.
 license: MPL-2.0
-contact: jon.seager@canonical.com
+contact: https://github.com/jnsgruk/terraform/issues
 issues: https://github.com/jnsgruk/terraform/issues
 source-code: https://github.com/jnsgruk/terraform
 website: https://terraform.io
@@ -11,10 +11,21 @@ description: |
   infrastructure. It is an open source tool that codifies APIs into
   declarative configuration files that can be shared amongst team members,
   treated as code, edited, reviewed, and versioned.
+
+  **Are you having issues?**
+
+  Let us know by creating a new issue here:
+  https://github.com/snapcrafters/signal-desktop/issues
+
+  **Authors**
+
+  This snap is maintained by the Snapcrafters community, and is not
+  necessarily endorsed or officially maintained by the upstream developers.
 base: core22
 grade: stable
 confinement: classic
 compression: lzo
+icon: snap/gui/terraform.png
 
 apps:
   terraform:
