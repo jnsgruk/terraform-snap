@@ -24,6 +24,6 @@ jobs:
           update-script: |
             VERSION=$(
               curl -sL https://api.github.com/repos/hashicorp/terraform/releases |
-              jq .  | grep tag_name | grep -v beta | grep -v alpha | head -n 1 | cut -d'"' -f4 | tr -d 'v'
+              jq -r '.[].tag_name' | grep -m1 -vE 'alpha|beta|rc' | tr -d 'v'
             )
             sed -i 's/^\(version: \).*$/\1'"$VERSION"'/' snap/snapcraft.yaml
