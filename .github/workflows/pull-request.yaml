@@ -24,7 +24,7 @@ jobs:
           install: true
       
       - name: Setup MicroK8s
-        uses: balchua/microk8s-actions@v0.4.2
+        uses: balchua/microk8s-actions@v0.4.3
 
       - name: Setup Docker
         run: |
